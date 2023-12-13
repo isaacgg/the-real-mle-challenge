@@ -1,0 +1,56 @@
+base:
+  data_path: ./data/raw/listings.csv
+
+train_preprocess:
+  columns: [id, neighbourhood_group_cleansed, property_type, room_type, latitude, longitude,
+            accommodates, bathrooms, bedrooms, beds, amenities, price]
+  amenities: [TV, Internet, Air_conditioning, Kitchen, Heating, Wifi, Elevator, Breakfast]
+  min_price_to_consider: 10
+  price_bins: [10, 90, 180, 400, !!float .inf]
+
+api_preprocess:
+  features: [ neighbourhood, room_type, accommodates, bathrooms, bedrooms ]
+  label: category
+  map_room_type:
+    Shared room: 1
+    Private room: 2
+    Entire home/apt: 3
+    Hotel room: 4
+  map_neighb:
+    Bronx: 1
+    Queens: 2
+    Staten Island: 3
+    Brooklyn: 4
+    Manhattan: 5
+
+data_split:
+  test_size: 0.15
+  random_state: 1
+  label: category
+
+train:
+  model_path: ./models/
+  params:
+    n_estimators: 500
+    class_weight: balanced
+    n_jobs: 4
+    random_state: 0
+
+evaluation:
+  metrics_path: ./reports/
+  metrics: [precision, recall, support]
+  report_maps:
+    '0': low
+    '1': mid
+    '2': high
+    '3': lux
+
+api:
+  ip: 0.0.0.0
+  port: 8008
+  model_path: ./models/simple_classifier.pkl
+  output_map:
+    0: low
+    1: mid
+    2: high
+    3: lux

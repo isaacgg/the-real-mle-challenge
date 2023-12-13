@@ -1,12 +1,16 @@
 base:
   data_path: ./data/raw/listings.csv
 
-preprocess:
+train_preprocess:
   columns: [id, neighbourhood_group_cleansed, property_type, room_type, latitude, longitude,
             accommodates, bathrooms, bedrooms, beds, amenities, price]
   amenities: [TV, Internet, Air_conditioning, Kitchen, Heating, Wifi, Elevator, Breakfast]
   min_price_to_consider: 10
   price_bins: [10, 90, 180, 400, !!float .inf]
+
+api_preprocess:
+  features: [ neighbourhood, room_type, accommodates, bathrooms, bedrooms ]
+  label: category
   map_room_type:
     Shared room: 1
     Private room: 2
@@ -22,7 +26,6 @@ preprocess:
 data_split:
   test_size: 0.15
   random_state: 1
-  features: [neighbourhood, room_type, accommodates, bathrooms, bedrooms]
   label: category
 
 train:
@@ -41,3 +44,13 @@ evaluation:
     '1': mid
     '2': high
     '3': lux
+
+api:
+  ip: 0.0.0.0
+  port: 8008
+  model_path: ./models/simple_classifier.pkl
+  output_map:
+    0: low
+    1: mid
+    2: high
+    3: lux
